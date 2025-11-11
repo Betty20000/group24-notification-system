@@ -64,8 +64,20 @@ func main() {
 
 	logger.Log.Info("Database connection established")
 
+	// Initialize Redis
+	redisClient, err := database.NewRedis(cfg.Redis)
+	if err != nil {
+		logger.Log.Fatal("Failed to initialize Redis", zap.Error(err))
+	}
+	defer redisClient.Close()
+
+	logger.Log.Info("Redis connection established")
+
 	// Initialize repository
 	notificationRepo := repository.NewNotificationRepository(db)
+
+	// Initialize idempotency service
+	idempotencyService := services.NewIdempotencyService(redisClient, cfg.Redis.IdempotencyTTL)
 
 	// Initialize clients (using mocks for now)
 	var userClient = mocks.NewUserServiceMock()
@@ -83,7 +95,7 @@ func main() {
 
 	// Initialize handlers
 	healthHandler := handlers.NewHealthHandler(db)
-	notificationHandler := handlers.NewNotificationHandler(orchestrationService)
+	notificationHandler := handlers.NewNotificationHandler(orchestrationService, idempotencyService)
 	userHandler := handlers.NewUserHandler()
 
 	// Setup Gin router

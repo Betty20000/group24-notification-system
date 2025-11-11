@@ -45,10 +45,11 @@ type KafkaConfig struct {
 }
 
 type RedisConfig struct {
-	Host     string
-	Port     string
-	Password string
-	DB       int
+	Host           string
+	Port           string
+	Password       string
+	DB             int
+	IdempotencyTTL time.Duration // TTL for idempotency keys
 }
 
 type PostgreSQLConfig struct {
@@ -90,10 +91,11 @@ func Load() *Config {
 			PushTopic:  getEnv("KAFKA_PUSH_TOPIC", "push.queue"),
 		},
 		Redis: RedisConfig{
-			Host:     getEnv("REDIS_HOST", "localhost"),
-			Port:     getEnv("REDIS_PORT", "6379"),
-			Password: getEnv("REDIS_PASSWORD", ""),
-			DB:       getIntEnv("REDIS_DB", 0),
+			Host:           getEnv("REDIS_HOST", "localhost"),
+			Port:           getEnv("REDIS_PORT", "6379"),
+			Password:       getEnv("REDIS_PASSWORD", ""),
+			DB:             getIntEnv("REDIS_DB", 0),
+			IdempotencyTTL: getDurationEnv("REDIS_IDEMPOTENCY_TTL", 24*time.Hour),
 		},
 		PostgreSQL: PostgreSQLConfig{
 			Host:     getEnv("POSTGRES_HOST", "localhost"),
