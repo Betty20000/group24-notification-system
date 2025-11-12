@@ -6,18 +6,18 @@ import (
 )
 
 type EmailSender interface {
-    SendEmail(job interface{}) error
+	SendEmail(job interface{}) error
 }
 
 type smtpSender struct {
-    provider provider.EmailProvider
+	provider provider.EmailProvider
 }
 
 func NewSMTPProvider() EmailSender {
-    return &smtpSender{provider: provider.NewSMTPProvider()}
+	return &smtpSender{provider: provider.NewSMTPProvider()}
 }
 
 func (s *smtpSender) SendEmail(job interface{}) error {
-    j := job.(models.EmailRequest)
-    return s.provider.Send(j)
+	j := job.(models.EmailRequest)
+	return s.provider.Send(j)
 }

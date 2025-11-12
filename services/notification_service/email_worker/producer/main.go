@@ -11,7 +11,6 @@ import (
 
 const KafkaTopic = "email.jobs"
 
-// ✅ The EXACT struct your email worker consumes
 type EmailJob struct {
 	UserID     string `json:"user_id"`
 	To         string `json:"to"`
@@ -47,7 +46,6 @@ func main() {
 		log.Fatal("Failed to marshal JSON:", err)
 	}
 
-	// Send message
 	err = p.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &[]string{KafkaTopic}[0], Partition: kafka.PartitionAny},
 		Value:          value,

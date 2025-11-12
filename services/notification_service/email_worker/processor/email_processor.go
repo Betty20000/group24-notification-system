@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
+	cbreaker "github.com/uloamaka/notification-service/circuit_breaker"
 	emailservice "github.com/uloamaka/notification-service/email_service/sender"
 	models "github.com/uloamaka/notification-service/email_worker/model"
 	"github.com/uloamaka/notification-service/retry"
-	cbreaker "github.com/uloamaka/notification-service/circuit_breaker"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/sony/gobreaker/v2"

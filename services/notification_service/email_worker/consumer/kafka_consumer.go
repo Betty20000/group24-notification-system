@@ -31,16 +31,20 @@ func (c *KafkaEmailConsumer) Start(topic string) error {
 	}
 
 	conf := &kafka.ConfigMap{
-		"bootstrap.servers":  kafkaServer,
-		"group.id":           kafkaGroup,
-		"auto.offset.reset":  "earliest",
+		"bootstrap.servers": kafkaServer,
+		"group.id":          kafkaGroup,
+		"auto.offset.reset": "earliest",
 	}
 
 	consumer, err := kafka.NewConsumer(conf)
 	if err != nil {
 		return err
 	}
-	defer consumer.Close()
+	defer func() {
+		if err := consumer.Close(); err != nil {
+			log.Printf("failed to close consumer: %v", err)
+		}
+	}()
 
 	topicName := topic
 	if topicName == "" {
@@ -63,6 +67,10 @@ func (c *KafkaEmailConsumer) Start(topic string) error {
 			continue
 		}
 
-		go c.processor.Process(context.Background(), msg.Value)
+		go func() {
+			if err := c.processor.Process(context.Background(), msg.Value); err != nil {
+				log.Printf("failed to process message: %v", err)
+			}
+		}()
 	}
 }
