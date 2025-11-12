@@ -42,9 +42,10 @@ type LoggingConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers    []string
-	EmailTopic string
-	PushTopic  string
+	Brokers     []string
+	EmailTopic  string
+	PushTopic   string
+	FailedTopic string // Dead Letter Queue topic
 }
 
 type RedisConfig struct {
@@ -95,9 +96,10 @@ func Load() *Config {
 		},
 
 		Kafka: KafkaConfig{
-			Brokers:    getSliceEnv("KAFKA_BROKERS", []string{"localhost:9092"}),
-			EmailTopic: getEnv("KAFKA_EMAIL_TOPIC", "email.queue"),
-			PushTopic:  getEnv("KAFKA_PUSH_TOPIC", "push.queue"),
+			Brokers:     getSliceEnv("KAFKA_BROKERS", []string{"localhost:9092"}),
+			EmailTopic:  getEnv("KAFKA_EMAIL_TOPIC", "email.queue"),
+			PushTopic:   getEnv("KAFKA_PUSH_TOPIC", "push.queue"),
+			FailedTopic: getEnv("KAFKA_FAILED_TOPIC", "failed.queue"),
 		},
 		Redis: RedisConfig{
 			Host:           getEnv("REDIS_HOST", "localhost"),
